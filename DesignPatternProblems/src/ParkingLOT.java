@@ -24,8 +24,8 @@ public class ParkingLOT {
         ExitGate exitGate = new ExitGate(new CostComputation());
 
         // Park vehicles
-        entranceGate.parkVehicle(vehicle1, twoWheelerManager);
-        entranceGate.parkVehicle(vehicle2, fourWheelerManager);
+        entranceGate.processEntry(vehicle1, twoWheelerManager);
+        entranceGate.processEntry(vehicle2, fourWheelerManager);
 
         // Exit vehicles
         exitGate.processExit(vehicle1, twoWheelerManager);
@@ -66,6 +66,12 @@ class Ticket {
         this.entryTime = entryTime;
         this.vehicle = vehicle;
         this.parkingSpot = parkingSpot;
+    }
+
+    // Method to generate a new ticket
+    public static Ticket generateTicket(Vehicle vehicle, ParkingSpot parkingSpot) {
+        long entryTime = System.currentTimeMillis();
+        return new Ticket(entryTime, vehicle, parkingSpot);
     }
 }
 
@@ -144,13 +150,14 @@ class FourWheelerParkingManager extends ParkingManager {
 
 
 class EntranceGate {
-    public Ticket parkVehicle(Vehicle v,ParkingManager parkingManager){
+    public Ticket ticket;
+
+    public Ticket processEntry(Vehicle v,ParkingManager parkingManager){
         ParkingSpot parkingSpot = parkingManager.findParkingSpot();
         if (parkingSpot != null) {
             parkingSpot.parkVehicle(v);
-            long entryTime = System.currentTimeMillis();
-            Ticket ticket = new Ticket(entryTime, v, parkingSpot);
-            System.out.println("Vehicle " + v.vehicleId + " parked at spot.");
+            this.ticket = Ticket.generateTicket(v,parkingSpot);
+            System.out.println("vehicle " + v.vehicleId + " parked");
             return ticket;
         } else {
             System.out.println("No available parking spot for vehicle " + v.vehicleId);
